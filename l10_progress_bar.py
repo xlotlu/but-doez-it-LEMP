@@ -4,6 +4,7 @@ from collections import deque
 import analogio
 import board
 import pwmio
+from lib.config import ADC_PIN, LED1_PIN
 
 # -- Lesson 10 --
 #
@@ -15,8 +16,8 @@ NOISE_THRESHOLD_PERCENTAGE = 2.5
 PROGRESSBAR_WIDTH = 100
 
 
-potentiometer = analogio.AnalogIn(board.GP26)
-led = pwmio.PWMOut(board.GP15, frequency=1000)
+potentiometer = analogio.AnalogIn(ADC_PIN)
+led = pwmio.PWMOut(LED1_PIN, frequency=1000)
 
 
 def print_progress(value):

@@ -2,6 +2,7 @@ from time import sleep
 
 import board
 import pwmio
+from lib.config import LED1_PIN, LED2_PIN
 
 # -- Lesson 5 --
 #
@@ -26,7 +27,7 @@ sleep(3)
 # Example 2
 # LED 0-100% power cycle
 
-led2 = pwmio.PWMOut(board.GP15, frequency=1000)
+led2 = pwmio.PWMOut(LED1_PIN, frequency=1000)
 
 DUTY = 1
 TIMES = 5
@@ -44,8 +45,8 @@ for _ in range(TIMES):
 # Example 3
 # with 2 leds
 
-white_led = pwmio.PWMOut(board.GP15, frequency=1000)
-green_led = pwmio.PWMOut(board.GP13, frequency=1000)
+white_led = pwmio.PWMOut(LED1_PIN, frequency=1000)
+green_led = pwmio.PWMOut(LED2_PIN, frequency=1000)
 
 Max_Duty = 2**16 - 1
 

@@ -3,6 +3,7 @@ import asyncio
 import analogio
 import board
 import pwmio
+from lib.config import ADC_PIN, LED1_PIN
 
 # -- Lesson 13 --
 #  - Version 2 -
@@ -13,8 +14,8 @@ import pwmio
 # This version uses EMA (Exponential Moving Average) for smoothing.
 # It's faster and uses less memory than the previous "window" approach.
 
-potentiometer = analogio.AnalogIn(board.GP26)
-led = pwmio.PWMOut(board.GP15, frequency=1000)
+potentiometer = analogio.AnalogIn(ADC_PIN)
+led = pwmio.PWMOut(LED1_PIN, frequency=1000)
 
 
 def create_smoothing_func(shift=2, initial=0):

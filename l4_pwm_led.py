@@ -2,6 +2,7 @@ from time import sleep
 
 import board
 import digitalio
+from lib.config import LED1_PIN
 
 # -- Lesson 4 --
 #
@@ -12,7 +13,7 @@ import digitalio
 # the animation takes 5 seconds
 # each position is 5 / 100
 
-led = digitalio.DigitalInOut(board.GP15)
+led = digitalio.DigitalInOut(LED1_PIN)
 led.direction = digitalio.Direction.OUTPUT
 
 steps = 500

@@ -2,8 +2,9 @@ from collections import deque
 
 import analogio
 import board
+from lib.config import ADC_PIN
 
-potentiometer = analogio.AnalogIn(board.GP26)
+potentiometer = analogio.AnalogIn(ADC_PIN)
 
 # -- Lesson 8 --
 #

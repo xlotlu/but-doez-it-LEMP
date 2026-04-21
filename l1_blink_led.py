@@ -2,6 +2,7 @@ from time import sleep
 
 import board
 import digitalio
+from lib.config import LED1_PIN
 
 # -- Lesson 1 --
 #
@@ -13,7 +14,7 @@ TIME_OFF = 0.01
 
 TIMES = 50
 
-led = digitalio.DigitalInOut(board.GP15)
+led = digitalio.DigitalInOut(LED1_PIN)
 led.direction = digitalio.Direction.OUTPUT
 
 # we make the led blink 'TIMES'

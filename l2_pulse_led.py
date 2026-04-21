@@ -2,12 +2,13 @@ from time import sleep
 
 import board
 import digitalio
+from lib.config import LED1_PIN
 
 # -- Lesson 2 --
 #
 # the LED blinks faster and faster
 
-led = digitalio.DigitalInOut(board.GP15)
+led = digitalio.DigitalInOut(LED1_PIN)
 led.direction = digitalio.Direction.OUTPUT
 
 for x in range(2, 100):

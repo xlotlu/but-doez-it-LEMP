@@ -2,6 +2,7 @@ from time import sleep
 
 import board
 import digitalio
+from lib.config import LED1_PIN
 
 # -- Lesson 3 --
 #
@@ -11,7 +12,7 @@ import digitalio
 
 TIME_UNIT = 1/250 # 25 fps
 
-led = digitalio.DigitalInOut(board.GP15)
+led = digitalio.DigitalInOut(LED1_PIN)
 led.direction = digitalio.Direction.OUTPUT
 
 for pct in range(1, 100):

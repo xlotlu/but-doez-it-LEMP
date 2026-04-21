@@ -2,14 +2,15 @@ import asyncio
 
 import board
 import digitalio
+from lib.config import LED1_PIN, LED2_PIN
 
 # -- Lesson 12 --
 #
 # pulse the LEDs with async
 
 LEDS = [
-    (board.GP13, 1),
-    (board.GP15, 2),
+    (LED2_PIN, 1),
+    (LED1_PIN, 2),
     # ...
 ]
 
