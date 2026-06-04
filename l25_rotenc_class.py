@@ -22,20 +22,6 @@ def ticks_diff(ticks1, ticks2):
     return diff
 
 
-def rgb_color_wheel(x):
-    """Color wheel to allow for cycling through the rainbow of RGB colors."""
-    x = x % (255 * 3)
-
-    if 0 <= x < 255:
-        return (255 - x, x, 0)
-    elif 255 <= x < 255 * 2:
-        x -= 255
-        return (0, 255 - x, x)
-    else:
-        x -= 255 * 2
-        return (x, 0, 255 - x)
-
-
 class RotaryEncoder:
     def __init__(self, pin1, pin2, callback):
         self._encoder = IncrementalEncoder(pin1, pin2)
