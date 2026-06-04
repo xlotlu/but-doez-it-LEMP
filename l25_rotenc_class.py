@@ -12,8 +12,62 @@ TICK = 40 # the tick used to detect rotenc changes, in ms
 SLEEP = TICK // 10 # we async sleep for the 10th part of a tick
 
 
+
+
+# important note:
+# different lamp modes have different "compute" functions.
+# examples:
+#   Tetris is linear, and bounded (has min and max)
+#   change color brightness: accelerated, bounded
+#   change color wheel: accelerated (maybe different algorithm?),
+#                       but bounded + wraparound
+
+# Terms dictionary
+# ================
+#
+# linear:
+#       rotation speed is not taken into consideration
+#
+# accelerated:
+#       faster rotation speed causes greater transition
+#
+# bounded:
+#       it has a maximum and minimum value which it cannot surpass
+#
+# unbounded:
+#       it has no minimum / maximum values. goes on forever.
+#
+# wraparound:
+#       makes sense only in bounded mode:
+#       when reaching the maximum value, the next value will be the minimum
+#       and the other way around (passing minimum leads to maximum)
+#
+
+
+# TODO: should the compute function work on system_value or on delta?
+#       it must do different things depending on bounded / accelerated / wraparound
+
+
 class RotaryEncoder:
-    def __init__(self, pin1, pin2, callback):
+    def __init__(self, pin1, pin2, callback, accelerated=False, limits=(None, None), wraparound=False):
+        min, max = limits
+
+        if (min is None and max is not None) or (max is None and min is not None):
+            # this is an error, both bounds are necessary
+            raise ValueError("A bounded rotary encoder must specify both bounds!")
+
+        self.bounded = min is not None and max is not None
+
+        self.min = min
+        self.max = max
+
+        if wraparound and not self.bounded:
+            raise ValueError("An unbounded rotary encoder cannot wrap around!")
+
+        self.wraparound = wraparound
+
+        self.accelerated = accelerated
+
         self._encoder = IncrementalEncoder(pin1, pin2)
         self.velocity = 0
         self.callback = callback
@@ -21,6 +75,35 @@ class RotaryEncoder:
     def compute(self, delta):
         self.velocity = self.velocity * 0.5 + delta  # decay + input
         return round(self.velocity * 2)
+
+
+    def mk_the_value(self):
+
+        new_value = precisely_that_computed_value
+
+
+        if self.wraparound:
+            # clar că-i bounded
+            if new_value < self.min:
+                # TODO: emit event: lower bound was hit
+                new_value = self.max
+
+            elif new_value > self.max:
+                # TODO: emit event: upper bound was hit
+                new_value = self.max
+
+            # else: everything is in order, nothing to do
+
+        if self.bounded:
+            if new_value < self.min:
+                # TODO: emit event: lower bound was hit
+                new_value = self.min
+
+            elif new_value > self.max:
+                # TODO: emit event: upper bound was hit
+                new_value = self.max
+
+            # else: everything is in order, nothing to do
 
     async def monitor(self):
         old_time = ticks_ms()
@@ -75,20 +158,3 @@ async def main():
     await asyncio.gather(ticker)
 
 asyncio.run(main())
-
-
-# v. A:
-
-
-# v. B:
-
-
-# important note:
-# different lamp modes have different "compute" functions.
-# examples:
-#   Tetris is linear, and bounded
-#   change color brightness: accelerated, bounded
-#   change color wheel: accelerated (maybe different algorithm?),
-#                       but bounded + wraparound
-
-
