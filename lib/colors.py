@@ -1,3 +1,5 @@
+from adafruit_led_animation.color import *
+
 # TODO: make this generic, universal, nice, and not hardcoded.
 #       and maybe a class, because Darius like class
 def rgb_color_wheel(x):

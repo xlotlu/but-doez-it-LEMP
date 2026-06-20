@@ -7,3 +7,5 @@ ADC1_PIN = board.A5
 
 ROTENC_PIN1 = board.IO12
 ROTENC_PIN2 = board.IO13
+
+MATRIX_PIN = board.IO1
