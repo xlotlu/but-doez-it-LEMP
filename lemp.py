@@ -2,6 +2,7 @@ import asyncio
 from collections import deque
 
 from neopixel import NeoPixel
+
 from rotenc import (
     RotaryEncoder,
     BoundedRotaryEncoder,
@@ -10,7 +11,6 @@ from rotenc import (
     AcceleratedBoundedRotaryEncoder,
     AcceleratedWraparoundRotaryEncoder,
 )
-
 
 import colors
 import config
@@ -65,7 +65,9 @@ class Lemp:
     # mental note: this will be split apart into submodes
     # (when the time comes)
 
-    def __init__(self, color=colors.AMBER, brightness=1):
+    def __init__(self, color=colors.AMBER, brightness=12):
+        self.init_hw()
+
         self.color = color
         self.brightness = brightness
  
@@ -76,9 +78,20 @@ class Lemp:
             'b': self._b,
         }
 
-        self._chans = deque(self.channels.keys())
+        self._chans = deque(self.channels.keys(), 4)
 
-        self.init_hw()
+        # make sure the encoder value is set to the current channel's value
+        # (that is, brightness at this point)
+        self.reset_encoder()
+
+    def init_hw(self):
+        self.encoder = AcceleratedBoundedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
+                                                       0, 255,
+                                                       callback=self.on_encoder_event)
+
+        self.matrix = NeoPixel(config.MATRIX_PIN, 256)
+        # TODO: clear this
+        self.matrix.fill((100, 40, 0))
 
     @property
     def color(self):
@@ -95,18 +108,20 @@ class Lemp:
     @brightness.setter
     def brightness(self, value):
         self._brightness = value
-
-    def init_hw(self):
-        self.encoder = AcceleratedBoundedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
-                                                       callback=self.on_encoder_event)
-        self.matrix = NeoPixel(config.MATRIX_PIN, 256, brightness=self.brightness)
+        self.matrix.brightness = value / 255
 
     def on_encoder_event(self, value):
         # tune the value for the current channel
-        self.channels[self.current_channel] = value
+        if self.current_channel == 'brightness':
+            self.brightness = value
+        else:
+            self.channels[self.current_channel] = value
 
     def on_click(self):
         self.next_channel()
+        self.reset_encoder()
+
+    def reset_encoder(self):
         self.encoder.value = self.channels[self.current_channel]
 
     @property
