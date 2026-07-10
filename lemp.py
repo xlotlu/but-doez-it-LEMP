@@ -11,6 +11,7 @@ from rotenc import (
     AcceleratedBoundedRotaryEncoder,
     AcceleratedWraparoundRotaryEncoder,
 )
+from button import Button
 
 import colors
 import config
@@ -88,7 +89,7 @@ class Lemp:
         self.encoder = AcceleratedBoundedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
                                                        0, 255,
                                                        callback=self.on_encoder_event)
-
+        self.button = Button(config.BUTTON_PIN)
         self.matrix = NeoPixel(config.MATRIX_PIN, 256)
         # TODO: clear this
         self.matrix.fill((100, 40, 0))
@@ -136,5 +137,6 @@ class Lemp:
         self._chans.extend(self.channels.keys())
 
     async def lemp(self):
-        ticker = asyncio.create_task(self.encoder.monitor())
-        await asyncio.gather(ticker)
+        rotenc_ticker = asyncio.create_task(self.encoder.monitor())
+        button_ticker = asyncio.create_task(self.button.monitor())
+        await asyncio.gather(rotenc_ticker, button_ticker)
