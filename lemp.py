@@ -89,7 +89,9 @@ class Lemp:
         self.encoder = AcceleratedBoundedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
                                                        0, 255,
                                                        callback=self.on_encoder_event)
-        self.button = Button(config.BUTTON_PIN)
+        self.button = Button(config.BUTTON_PIN,
+                             on_click_callback=self.on_click,
+                             )
         self.matrix = NeoPixel(config.MATRIX_PIN, 256)
         # TODO: clear this
         self.matrix.fill((100, 40, 0))

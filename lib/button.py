@@ -2,29 +2,43 @@ import asyncio
 
 from keypad import Keys
 
-from button_handler import ButtonHandler, ButtonInput
+from button_handler import (
+    ButtonHandler,
+    ButtonInput,
+    ButtonInitConfig,
+)
 
-
-def double_press(): print("Double press detected!")
-def short_press(): print("Short press detected!")
-def long_press(): print("Long press detected!")
-def hold(): print("The button began being held down!")
 
 class Button:
-    def __init__(self, pin):
-        actions = {
-            ButtonInput(ButtonInput.DOUBLE_PRESS, callback=double_press),
-            ButtonInput(ButtonInput.SHORT_PRESS, callback=short_press),
-            ButtonInput(ButtonInput.LONG_PRESS, callback=long_press),
-            ButtonInput(ButtonInput.HOLD, callback=hold),
-        }
+    def __init__(self, pin,
+                 on_click_callback=None,
+                ):
+        _actions = set()
+        if on_click_callback is not None:
+            _actions.add(ButtonInput(
+                ButtonInput.SHORT_PRESS, callback=on_click_callback
+            ))
 
-        scanner = Keys([pin], value_when_pressed=False)
-    
-        self._handler = ButtonHandler(scanner.events, actions)
+        # TODO:
+        # ButtonInput(ButtonInput.LONG_PRESS, callback=long_press)
+        # ButtonInput(ButtonInput.HOLD, callback=hold)
+
+        _config = ButtonInitConfig(
+            # we don't need double click
+            enable_multi_press=False,
+            # speedy response to long press.
+            # TODO: un-hardcode it
+            long_press_threshold=400,
+        )
+
+        _keypad = Keys([pin], value_when_pressed=False)
+        self._handler = ButtonHandler(
+            _keypad.events, _actions, config={0: _config}
+        )
 
     async def monitor(self):
         while True:
             self._handler.update()
 
+            # TODO: un-hardcode this too
             await asyncio.sleep(0.001)
