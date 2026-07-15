@@ -31,12 +31,11 @@ class RotaryEncoder:
 
     async def monitor(self):
         old_time = ticks_ms()
-        old_position = self._encoder.position
+        _old_encoder_position = self._encoder.position
 
-        system_value = self.value
         # TODO: here we initialise system / print / whatever with current values
         #
-        self.callback(system_value)
+        self.callback(self.value)
 
         while True:
             # we need to always await, so we do it from the start.
@@ -51,21 +50,19 @@ class RotaryEncoder:
             # this is a new tick. remember to reset the time!
             old_time = new_time
 
-            new_position = self._encoder.position
+            _encoder_position = self._encoder.position
 
-            delta = new_position - old_position
-            # don't forget to remember the old_position!
-            old_position = new_position
+            delta = _encoder_position - _old_encoder_position
+            # don't forget to remember the encoder's old position!
+            _old_encoder_position = _encoder_position
 
-            _new_system_value = system_value + self.process_delta(delta)
-            if delta == 0 and system_value == _new_system_value:
+            _new_system_value = self.value + self.process_delta(delta)
+            if delta == 0 and self.value == _new_system_value:
                 continue
 
-            system_value = self.process_value(_new_system_value)
+            self.value = self.process_value(_new_system_value)
 
-            self.value = system_value
-
-            self.callback(system_value)
+            self.callback(self.value)
 
 
 class BoundedRotaryEncoder(RotaryEncoder):
