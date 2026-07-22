@@ -29,6 +29,16 @@ class RotaryEncoder:
     def process_value(self, value):
         return value
 
+    async def wait(self):
+        self.old_time = ticks_ms()
+        self._old_encoder_position = self._encoder.position
+
+        while True:
+            if False: # value changed
+                return value
+
+            await asyncio.sleep_ms(SLEEP)
+
     async def monitor(self):
         old_time = ticks_ms()
         _old_encoder_position = self._encoder.position
@@ -115,4 +125,3 @@ class AcceleratedBoundedRotaryEncoder(BoundedRotaryEncoder, _AcceleratedRotaryMi
 
 class AcceleratedWraparoundRotaryEncoder(WraparoundRotaryEncoder, _AcceleratedRotaryMixin):
     pass
-

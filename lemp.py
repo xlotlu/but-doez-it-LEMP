@@ -2,6 +2,7 @@ import asyncio
 from collections import deque
 
 from neopixel import NeoPixel
+from async_button import Button
 
 from rotenc import (
     RotaryEncoder,
@@ -11,7 +12,7 @@ from rotenc import (
     AcceleratedBoundedRotaryEncoder,
     AcceleratedWraparoundRotaryEncoder,
 )
-from button import Button
+#from button import Button
 
 import colors
 import config
@@ -89,9 +90,14 @@ class Lemp:
                                                        0, 0xFF,
                                                        callback=self.on_encoder_event)
         self.button = Button(config.BUTTON_PIN,
-                             on_click_callback=self.on_click,
-                             )
+                             value_when_pressed=False,
+                             long_click_min_duration=1.0,
+                             long_click_enable=True,
+                             double_click_enable=False,
+                            )
         self.matrix = NeoPixel(config.MATRIX_PIN, config.MATRIX_PIXELS)
+
+        asyncio.create_task(self.monitor_button())
 
     @property
     def color(self):
@@ -150,7 +156,19 @@ class Lemp:
             idx = self._current_channel - 1
             self.encoder.value = self.color[idx]
 
+    async def monitor_button(self):
+        while True:
+            event = await self.button.wait(Button.PRESSED)
+            # and then, the payload:
+            self.on_click()
+
+    async def monitor_rotenc(self):
+        while True:
+            value = await self.encoder.wait()
+            self.on_encoder_event(value)
+            #await asyncio.sleep_ms(something)
+
+
     async def lemp(self):
         rotenc_ticker = asyncio.create_task(self.encoder.monitor())
-        button_ticker = asyncio.create_task(self.button.monitor())
-        await asyncio.gather(rotenc_ticker, button_ticker)
+        await asyncio.gather(rotenc_ticker)
