@@ -125,3 +125,30 @@ class AcceleratedBoundedRotaryEncoder(BoundedRotaryEncoder, _AcceleratedRotaryMi
 
 class AcceleratedWraparoundRotaryEncoder(WraparoundRotaryEncoder, _AcceleratedRotaryMixin):
     pass
+
+
+class AcceleratedBoundedBoostedRotaryEncoder(AcceleratedBoundedRotaryEncoder):
+    """
+    A rotary encoder that boosts the delta based on the current value.
+    """
+
+    def __init__(self, *args, booster=0.1, **kwargs):
+        # multiplier = percentage of the current value
+
+        super().__init__(*args, **kwargs)
+
+        # we will compute the constants for a simple
+        # a * x + b function, which will provide the delta
+        # based on the current value
+
+        self._b = 1
+        self._a = (self.max * booster - self._b) / self.max
+
+    def process_delta(self, delta):
+        # we preserve the accelerated logic 
+        delta = super().process_delta(delta)
+
+        # and then we massage the delta such that it is current-value dependent
+        multiplier = self._a * self.value + self._b
+
+        return round(multiplier * delta)

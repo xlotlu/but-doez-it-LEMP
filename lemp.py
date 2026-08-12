@@ -11,6 +11,7 @@ from rotenc import (
     AcceleratedRotaryEncoder,
     AcceleratedBoundedRotaryEncoder,
     AcceleratedWraparoundRotaryEncoder,
+    AcceleratedBoundedBoostedRotaryEncoder,
 )
 #from button import Button
 
@@ -86,7 +87,7 @@ class Lemp:
         # (as it was saved before power off, and now we load previous values)
 
     def init_hw(self):
-        self.encoder = AcceleratedBoundedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
+        self.encoder = AcceleratedBoundedBoostedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
                                                        0, 0xFF,
                                                        callback=self.on_encoder_event)
         self.button = Button(config.BUTTON_PIN,
