@@ -1,8 +1,12 @@
+import asyncio
+
 from neopixel import NeoPixel
 
 from rotenc import AcceleratedWraparoundRotaryEncoder
 
 from colors import rgb_color_wheel
+
+import config
 
 
 class ColorWheelLemp:
@@ -21,10 +25,11 @@ class ColorWheelLemp:
         )
 
         # TODO: this is common to all modes
-        self.matrix = NeoPixel(config.MATRIX_PIN, config.MATRIX_PIXELS)
+        self.matrix = NeoPixel(config.MATRIX_PIN, config.MATRIX_PIXELS, brightness=.2)
 
     def on_encoder_event(self, value):
         color = rgb_color_wheel(value)
+        print(color)
         self.matrix.fill(color)
 
     async def lemp(self):
