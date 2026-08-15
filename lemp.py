@@ -1,7 +1,5 @@
-import asyncio
 from collections import deque
 
-from neopixel import NeoPixel
 from async_button import Button
 
 from rotenc import (
@@ -15,6 +13,7 @@ from rotenc import (
 )
 #from button import Button
 
+from lemp_mode_base import LempModeBase
 import colors
 import config
 
@@ -63,13 +62,13 @@ import config
 #  - current brightness
 
 
-class Lemp:
+class RGBChannelMode(LempModeBase):
     # this is the RGBLemp
     # mental note: this will be split apart into submodes
     # (when the time comes)
 
     def __init__(self, color=colors.AMBER, brightness=12):
-        self.init_hw()
+        super().__init__()
 
         self.color = color
         self.brightness = brightness
@@ -87,6 +86,8 @@ class Lemp:
         # (as it was saved before power off, and now we load previous values)
 
     def init_hw(self):
+        super().init_hw()
+
         self.encoder = AcceleratedBoundedBoostedRotaryEncoder(config.ROTENC_PIN1, config.ROTENC_PIN2,
                                                        0, 0xFF,
                                                        callback=self.on_encoder_event)
@@ -96,7 +97,6 @@ class Lemp:
                              long_click_enable=True,
                              double_click_enable=False,
                             )
-        self.matrix = NeoPixel(config.MATRIX_PIN, config.MATRIX_PIXELS)
 
         asyncio.create_task(self.monitor_button())
 
@@ -108,15 +108,6 @@ class Lemp:
     def color(self, value):
         self._r, self._g, self._b = value
         self.matrix.fill(value)
-
-    @property
-    def brightness(self):
-        return self._brightness
-
-    @brightness.setter
-    def brightness(self, value):
-        self._brightness = value
-        self.matrix.brightness = value / 255
 
     def on_encoder_event(self, value):
         # which is the current channel?
