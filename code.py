@@ -1,6 +1,6 @@
 import asyncio
-#from lemp import RGBChannelMode
-from colorwheel_lemp import RGBColorWheelMode
+#from rgb_channel_mode import RGBChannelMode
+from rgb_colorwheel_mode import RGBColorWheelMode
 
 
 if __name__ == "__main__":
